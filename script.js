@@ -1,7 +1,4 @@
-/* ---------- LE FOTO ----------
-   Metti le tue 5 foto nella cartella "img" con questi nomi
-   (oppure cambia i percorsi qui sotto). Una foto nuova ogni N pezzi;
-   finite le 5, si riparte dalla prima. */
+
 const PHOTOS = [
   { src: "img/sushi1.jpg", nome: "Nigiri salmone" },
   { src: "img/sushi2.jpg", nome: "Uramaki" },
@@ -10,8 +7,8 @@ const PHOTOS = [
   { src: "img/sushi5.jpg", nome: "Gunkan" },
 ];
 PHOTOS.forEach(p => { const i = new Image(); i.src = p.src; }); // precarica
+ 
 
-/* ---------- disegni di riserva (se una foto non si trova) ---------- */
 const NORI = "#1b2420", RISO = "#f7f5ee";
 const dots = (n, r, rad, fill, size) => Array.from({ length: n }, (_, i) => {
   const a = (i / n) * Math.PI * 2;
@@ -28,11 +25,10 @@ const FALLBACK = [
   () => maki(`<circle cx="100" cy="100" r="36" fill="#5fae3d"/><circle cx="100" cy="100" r="25" fill="#d3ebae"/>${dots(8, 14, 0, "#8bc269", 2.4)}`),
   () => maki(`${dots(1, 0, 0, "#ff6a2b", 9)}${dots(8, 16, 0, "#ff6a2b", 9)}${dots(14, 31, 0, "#ff8a3d", 8)}${dots(1, 0, 0, "#ffb27a", 3)}`),
 ];
-
-/* ---------- scritta che scorre (solo nella metà di Valeria) ---------- */
+ 
 const TICKER_TEXT = "non valgono le alghe";
 const TICKER_PAUSA = [8, 20];   // secondi di pausa casuale tra un passaggio e l'altro
-
+ 
 /* ---------- stato ---------- */
 const state = {
   step: 10,
@@ -41,7 +37,7 @@ const state = {
     { name: "MICHELE", color: "#2f7d5b", count: 0 },
   ],
 };
-
+ 
 // Salvataggio: localStorage, con cookie e window.name come riserva
 const KEY = "sfida-roll";
 const readSaved = () => {
@@ -73,13 +69,13 @@ try {
 } catch (e) {}
 window.addEventListener("pagehide", save);
 document.addEventListener("visibilitychange", () => { if (document.hidden) save(); });
-
+ 
 const lum = (hex) => {
   const n = parseInt(hex.slice(1), 16), c = [n >> 16, (n >> 8) & 255, n & 255]
     .map(v => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); });
   return .2126 * c[0] + .7152 * c[1] + .0722 * c[2];
 };
-
+ 
 /* ---------- pannelli ---------- */
 const els = [];
 ["p1", "p2"].forEach((id, i) => {
@@ -88,12 +84,14 @@ const els = [];
     <div class="name"></div>
     ${i === 0 ? '<div class="ticker"><span></span></div>' : ''}
     <div class="photo"><div class="frame"></div></div>
-    <div class="pips">${PHOTOS.map(() => "<span></span>").join("")}</div>
-    <div class="count" aria-live="polite">0</div>
+    <div class="info">
+      <div class="pips">${PHOTOS.map(() => "<span></span>").join("")}</div>
+      <div class="next"></div>
+    </div>
     <div class="progress"><div></div></div>
-    <div class="next"></div>
-    <div class="buttons">
+    <div class="controls">
       <button class="minus" aria-label="Meno uno">−</button>
+      <div class="count" aria-live="polite">0</div>
       <button class="plus" aria-label="Più uno">+</button>
     </div>`;
   const e = {
@@ -108,7 +106,7 @@ const els = [];
   root.querySelector(".plus").addEventListener("click", () => change(i, 1));
   root.querySelector(".minus").addEventListener("click", () => change(i, -1));
 });
-
+ 
 function change(i, d) {
   const p = state.players[i];
   if (d < 0 && p.count === 0) return;
@@ -116,7 +114,7 @@ function change(i, d) {
   render(i, true);
   save();
 }
-
+ 
 function showPhoto(e, idx) {
   const ph = PHOTOS[idx];
   e.frame.innerHTML = "";
@@ -126,7 +124,7 @@ function showPhoto(e, idx) {
   img.src = ph.src;
   e.frame.appendChild(img);
 }
-
+ 
 function render(i, animate) {
   const p = state.players[i], e = els[i], step = Math.max(1, state.step);
   e.root.style.setProperty("--bg", p.color);
@@ -136,7 +134,7 @@ function render(i, animate) {
   const into = p.count % step;
   e.bar.style.width = (into / step * 100) + "%";
   e.next.textContent = "Prossima foto tra " + (step - into);
-
+ 
   // una foto nuova ogni N pezzi; dopo l'ultima si riparte dalla prima
   const idx = Math.floor(p.count / step) % PHOTOS.length;
   if (idx !== e.lastIdx) {
@@ -147,11 +145,11 @@ function render(i, animate) {
     e.lastIdx = idx;
   }
   e.pips.forEach((s, k) => s.classList.toggle("on", k <= idx));
-
+ 
   if (animate) { e.count.classList.remove("bump"); void e.count.offsetWidth; e.count.classList.add("bump"); }
 }
 const renderAll = (a) => [0, 1].forEach(i => render(i, a));
-
+ 
 /* ---------- impostazioni ---------- */
 const dlg = document.getElementById("settings");
 const $ = (id) => document.getElementById(id);
@@ -178,16 +176,16 @@ $("reset").addEventListener("click", () => {
     renderAll(false); save();
   }
 });
-
+ 
 renderAll(false);
-
+ 
 /* ---------- avvio della scritta che scorre ---------- */
 function startTicker(root) {
   const box = root.querySelector(".ticker");
   if (!box) return;
   const sp = box.firstElementChild;
   sp.textContent = TICKER_TEXT;
-
+ 
   const pausa = () => (TICKER_PAUSA[0] + Math.random() * (TICKER_PAUSA[1] - TICKER_PAUSA[0])) * 1000;
   const run = () => {
     sp.classList.remove("run");
@@ -207,3 +205,4 @@ function startTicker(root) {
   setTimeout(run, 3000);
 }
 startTicker(els[0].root);   // els[0] = giocatore in basso (Valeria)
+ 
