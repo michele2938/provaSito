@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sfida sushi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<noscript><p style="position:fixed;inset:0;z-index:99;background:#fff;color:#c00;padding:1rem;font:16px sans-serif">JavaScript è disattivato: la pagina ha bisogno di JavaScript per funzionare.</p></noscript>
+<script>
+  // se qualcosa va storto, mostra l'errore a schermo invece di restare nero
+  window.addEventListener("error", function (ev) {
+    var b = document.createElement("pre");
+    b.style.cssText = "position:fixed;left:0;right:0;top:0;z-index:99;background:#fff;color:#c00;padding:.8rem;font:14px monospace;white-space:pre-wrap";
+    b.textContent = "Errore: " + ev.message + " (riga " + ev.lineno + ")";
+    document.body.appendChild(b);
+  });
+</script>
+
+<section class="player top" id="p2"></section>
+<div class="mid"><button id="open">⚙ IMpostazioni</button></div>
+<section class="player" id="p1"></section>
+
+<dialog id="settings">
+  <h2>Impostazioni</h2>
+  <div class="row"><input type="text" id="name1" maxlength="14" aria-label="Nome giocatore 1"><input type="color" id="color1" aria-label="Colore giocatore 1"></div>
+  <div class="row"><input type="text" id="name2" maxlength="14" aria-label="Nome giocatore 2"><input type="color" id="color2" aria-label="Colore giocatore 2"></div>
+  <div class="row"><label for="step">Cambia foto ogni</label><input type="number" id="step" min="1" value="10"> <span>pezzi</span></div>
+  <div class="actions">
+    <button id="reset">Azzera</button>
+    <button class="ok" id="close">Fatto</button>
+  </div>
+</dialog>
+
+<script src="script.js"></script>
+</body>
+</html>

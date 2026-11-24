@@ -1,0 +1,97 @@
+* { box-sizing: border-box; margin: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; background: #0e0e0e; overflow: hidden; }
+body {
+  font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  display: flex; flex-direction: column; height: 100dvh;
+  touch-action: manipulation; user-select: none; -webkit-user-select: none;
+}
+
+/* ogni giocatore occupa metà schermo; quello in alto è ruotato di 180°
+   così i due giocatori seduti uno di fronte all'altro leggono dritto */
+.player {
+  flex: 1; min-height: 0;
+  display: flex; flex-direction: column; align-items: center;
+  padding: .7rem 1rem; gap: .35rem;
+  color: var(--fg);
+  background:
+    radial-gradient(120% 70% at 50% 0%, color-mix(in srgb, var(--bg) 70%, #fff) 0%, transparent 70%),
+    linear-gradient(180deg, var(--bg), color-mix(in srgb, var(--bg) 70%, #000));
+}
+.player.top { transform: rotate(180deg); }
+/* colori di riserva: lo script li sostituisce con quelli scelti */
+#p1 { --bg: #e8503f; --fg: #ffffff; }
+#p2 { --bg: #2f7d5b; --fg: #ffffff; }
+
+.name {
+  font-size: 1.15rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase;
+  padding: .25rem 1rem; border-radius: 99px;
+  background: color-mix(in srgb, var(--fg) 16%, transparent);
+}
+
+/* scritta che scorre */
+.ticker { width: 100%; height: 1.3rem; overflow: hidden; position: relative; white-space: nowrap; font-size: .8rem; font-style: italic; opacity: .9; }
+.ticker span { position: absolute; left: 0; top: 0; display: none; will-change: transform; }
+.ticker span.run { animation: tick linear forwards; }
+@keyframes tick { from { transform: translateX(var(--from)); } to { transform: translateX(var(--to)); } }
+
+/* foto grande */
+.photo { flex: 1; min-height: 0; width: 100%; max-width: 30rem; display: flex; flex-direction: column; align-items: center; gap: .35rem; }
+.frame {
+  flex: 1; min-height: 0; width: 100%;
+  border-radius: 24px; overflow: hidden;
+  border: 4px solid var(--fg);
+  box-shadow: 0 12px 28px rgba(0,0,0,.4), 0 0 0 6px color-mix(in srgb, var(--fg) 18%, transparent);
+  background: rgba(0,0,0,.22);
+  display: flex; align-items: center; justify-content: center;
+}
+.frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.frame svg { height: 100%; width: auto; max-width: 100%; padding: .4rem; }
+.photo.pop .frame { animation: pop .6s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes pop { from { transform: scale(.3) rotate(-12deg); opacity: 0; } }
+.photo-name { font-size: 1rem; font-weight: 600; opacity: .95; letter-spacing: .03em; }
+
+/* 5 pallini: a che foto sei nel giro */
+.pips { display: flex; gap: .45rem; }
+.pips span { width: .7rem; height: .7rem; border-radius: 50%; border: 2px solid var(--fg); transition: background .25s, transform .25s; }
+.pips span.on { background: var(--fg); transform: scale(1.15); }
+
+.count {
+  font-size: clamp(3.5rem, 14vh, 6rem); font-weight: 900; line-height: 1;
+  font-variant-numeric: tabular-nums; text-shadow: 0 4px 14px rgba(0,0,0,.3);
+}
+.count.bump { animation: bump .2s ease; }
+@keyframes bump { 50% { transform: scale(1.14); } }
+
+.progress { width: 80%; max-width: 20rem; height: .7rem; border-radius: 99px; background: color-mix(in srgb, var(--fg) 25%, transparent); overflow: hidden; }
+.progress > div { height: 100%; width: 0; border-radius: 99px; background: var(--fg); box-shadow: 0 0 10px var(--fg); transition: width .25s; }
+.next { font-size: .85rem; opacity: .9; }
+
+.buttons { display: flex; gap: 1.2rem; margin-top: .2rem; }
+.buttons button {
+  width: clamp(4rem, 12vh, 5.5rem); height: clamp(4rem, 12vh, 5.5rem);
+  border-radius: 50%; font-size: 2.4rem; font-weight: 700; cursor: pointer;
+  border: 3px solid var(--fg); box-shadow: 0 6px 14px rgba(0,0,0,.3);
+  transition: transform .08s;
+}
+.plus { background: var(--fg); color: var(--bg); }
+.minus { background: color-mix(in srgb, var(--fg) 14%, transparent); color: var(--fg); }
+.buttons button:active { transform: scale(.9); }
+
+/* striscia centrale */
+.mid { background: #0e0e0e; padding: .35rem; display: flex; justify-content: center; }
+.mid button { background: #1e1e1e; color: #eee; border: 1px solid #555; border-radius: 99px; padding: .4rem 1.2rem; font-size: .9rem; cursor: pointer; }
+
+dialog { margin: auto; border: 0; border-radius: 20px; padding: 1.4rem; width: min(92vw, 22rem); font-family: inherit; box-shadow: 0 20px 50px rgba(0,0,0,.5); }
+dialog::backdrop { background: rgba(0,0,0,.7); }
+dialog h2 { font-size: 1.25rem; margin-bottom: .9rem; }
+.row { display: flex; gap: .6rem; align-items: center; margin-bottom: .7rem; }
+.row input[type=text] { flex: 1; min-width: 0; padding: .55rem; font-size: 1rem; border: 1px solid #aaa; border-radius: 10px; }
+.row input[type=color] { width: 3rem; height: 2.6rem; border: 0; padding: 0; background: none; }
+.row input[type=number] { width: 4.5rem; padding: .55rem; font-size: 1rem; border: 1px solid #aaa; border-radius: 10px; }
+.row label { flex: 1; }
+.actions { display: flex; gap: .6rem; justify-content: space-between; margin-top: 1rem; }
+.actions button { padding: .6rem 1.1rem; font-size: 1rem; border-radius: 10px; border: 1px solid #888; background: #fff; cursor: pointer; }
+.actions .ok { background: #1d2a24; color: #fff; border-color: #1d2a24; }
+
+button:focus-visible, input:focus-visible { outline: 3px solid #4c9aff; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .photo.pop .frame, .count.bump { animation: none; } .ticker span.run { animation-duration: 14s !important; } }
