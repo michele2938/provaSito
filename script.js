@@ -1,17 +1,13 @@
-/* ---------- LE FOTO ----------
-   Metti le tue 5 foto nella cartella "img" con questi nomi
-   (oppure cambia i percorsi qui sotto). Una foto nuova ogni N pezzi;
-   finite le 5, si riparte dalla prima. */
+
 const PHOTOS = [
   { src: "img/sushi1.jpg", nome: "Nigiri salmone" },
   { src: "img/sushi2.jpg", nome: "Uramaki" },
   { src: "img/sushi3.jpg", nome: "Nigiri gambero" },
   { src: "img/sushi4.jpg", nome: "Hosomaki" },
-  { src: "img/sushi5.jpg", nome: "Gunkan" },
+  { src: "img/sushi5.jpg", nome: "Panedolce" },
 ];
-PHOTOS.forEach(p => { const i = new Image(); i.src = p.src; }); // precarica
+PHOTOS.forEach(p => { const i = new Image(); i.src = p.src; });
 
-/* ---------- disegni di riserva (se una foto non si trova) ---------- */
 const NORI = "#1b2420", RISO = "#f7f5ee";
 const dots = (n, r, rad, fill, size) => Array.from({ length: n }, (_, i) => {
   const a = (i / n) * Math.PI * 2;
@@ -29,11 +25,10 @@ const FALLBACK = [
   () => maki(`${dots(1, 0, 0, "#ff6a2b", 9)}${dots(8, 16, 0, "#ff6a2b", 9)}${dots(14, 31, 0, "#ff8a3d", 8)}${dots(1, 0, 0, "#ffb27a", 3)}`),
 ];
 
-/* ---------- scritta che scorre (solo nella metà di Valeria) ---------- */
-const TICKER_TEXT = "non valgono le alghe";
-const TICKER_PAUSA = [8, 20];   // secondi di pausa casuale tra un passaggio e l'altro
 
-/* ---------- stato ---------- */
+const TICKER_TEXT = "non valgono le alghe";
+const TICKER_PAUSA = [8, 20];  
+
 const state = {
   step: 10,
   players: [
@@ -42,7 +37,6 @@ const state = {
   ],
 };
 
-// Salvataggio: localStorage, con cookie e window.name come riserva
 const KEY = "sfida-roll";
 const readSaved = () => {
   let raw = null;
@@ -80,7 +74,6 @@ const lum = (hex) => {
   return .2126 * c[0] + .7152 * c[1] + .0722 * c[2];
 };
 
-/* ---------- pannelli ---------- */
 const els = [];
 ["p1", "p2"].forEach((id, i) => {
   const root = document.getElementById(id);
@@ -138,8 +131,7 @@ function render(i, animate) {
   const into = p.count % step;
   e.bar.style.width = (into / step * 100) + "%";
   e.next.textContent = "Prossima foto tra " + (step - into);
-
-  // una foto nuova ogni N pezzi; dopo l'ultima si riparte dalla prima
+//RICONTROLLARE QEUSTO PEZZO
   const idx = Math.floor(p.count / step) % PHOTOS.length;
   if (idx !== e.lastIdx) {
     showPhoto(e, idx);
@@ -154,7 +146,6 @@ function render(i, animate) {
 }
 const renderAll = (a) => [0, 1].forEach(i => render(i, a));
 
-/* ---------- impostazioni ---------- */
 const dlg = document.getElementById("settings");
 const $ = (id) => document.getElementById(id);
 const f = { n1: $("name1"), c1: $("color1"), n2: $("name2"), c2: $("color2"), s: $("step") };
@@ -183,7 +174,6 @@ $("reset").addEventListener("click", () => {
 
 renderAll(false);
 
-/* ---------- avvio della scritta che scorre ---------- */
 function startTicker(root) {
   const box = root.querySelector(".ticker");
   if (!box) return;
@@ -197,7 +187,7 @@ function startTicker(root) {
     const w = box.clientWidth, sw = sp.offsetWidth;
     sp.style.setProperty("--from", w + "px");
     sp.style.setProperty("--to", -sw + "px");
-    sp.style.animationDuration = ((w + sw) / 55) + "s";   // circa 55 px al secondo
+    sp.style.animationDuration = ((w + sw) / 55) + "s";  
     void sp.offsetWidth;
     sp.classList.add("run");
   };
@@ -208,4 +198,4 @@ function startTicker(root) {
   });
   setTimeout(run, 3000);
 }
-startTicker(els[0].root);   // els[0] = giocatore in basso (Valeria)
+startTicker(els[0].root);   
